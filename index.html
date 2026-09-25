@@ -127,7 +127,7 @@
         </div>
 
         <div class="search-box-container">
-            <input type="text" id="query-input" placeholder="যেকোনো টুল বা সিকিউরিটি টার্ম লিখুন (যেমন: Ghidra, Wireshark, Kerberoasting)...">
+            <input type="text" id="query-input" placeholder="Jekono tool ba security term likhun...">
             <button class="search-btn" onclick="performSearch()">Search</button>
         </div>
 
@@ -141,15 +141,13 @@
     <script>
         function setApiKey() {
             let currentKey = localStorage.getItem("gemini_api_key") || "";
-            let userKey = prompt("আপনার Google Gemini API Key টি পেস্ট করুন:", currentKey);
+            let userKey = prompt("Apnar Google Gemini API Key ti pest korun:", currentKey);
             
             if (userKey !== null) {
                 userKey = userKey.trim();
                 if (userKey.length > 0) {
                     localStorage.setItem("gemini_api_key", userKey);
-                    alert("API Key সফলভাবে সেভ হয়েছে!");
-                } else {
-                    alert("API Key খালি রাখা যাবে না।");
+                    alert("API Key shofolbhabe save hoyeche!");
                 }
             }
         }
@@ -159,52 +157,54 @@
             const resultsContainer = document.getElementById("results-container");
             
             if (!query) {
-                alert("দয়া করে সার্চ বক্সে কিছু লিখুন।");
+                alert("Doya kore search box-e kichu likhun.");
                 return;
             }
 
             const apiKey = localStorage.getItem("gemini_api_key");
             if (!apiKey) {
-                alert("দয়া করে প্রথমে ওপরের 'Set Gemini API Key' থেকে আপনার API Key সেট করুন।");
                 setApiKey();
                 return;
             }
 
-            resultsContainer.innerHTML = `<div class="result-card">অনুসন্ধান করা হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন।</div>`;
+            resultsContainer.innerHTML = `<div class="result-card">Onushondhan kora hocche... Onugroho kore opekkha korun.</div>`;
 
-            const promptText = `Provide a comprehensive cybersecurity explanation, usage, and details for the following term or tool: ${query}. Format the response clearly with definitions and examples.`;
-
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const promptText = `Provide a comprehensive cybersecurity explanation, usage, and details for the following term or tool: ${query}.`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
             try {
-                const response = await fetch(apiUrl, {
+                let response = await fetch(apiUrl, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: promptText }]
-                        }]
-                    })
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
                 });
 
-                const data = await response.json();
+                let data = await response.json();
+
+                if (!response.ok) {
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                    response = await fetch(fallbackUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+                    });
+                    data = await response.json();
+                }
 
                 if (response.ok && data.candidates && data.candidates[0].content) {
                     const aiResponse = data.candidates[0].content.parts[0].text;
                     resultsContainer.innerHTML = `
                         <div class="result-card">
-                            <h3>ফলাফল: ${query}</h3>
+                            <h3>Folafol: ${query}</h3>
                             <p>${aiResponse.replace(/\n/g, '<br>')}</p>
                         </div>
                     `;
                 } else {
-                    const errorMsg = data.error ? data.error.message : "অজানা সমস্যা হয়েছে।";
-                    resultsContainer.innerHTML = `<div class="error-msg">API Key সঠিক নয় অথবা কোনো সমস্যা হয়েছে। ত্রুটি: ${errorMsg}</div>`;
+                    const errorMsg = data.error ? data.error.message : "Ojana shomoshsha hoyeche.";
+                    resultsContainer.innerHTML = `<div class="error-msg">Error: ${errorMsg}</div>`;
                 }
             } catch (error) {
-                resultsContainer.innerHTML = `<div class="error-msg">নেটওয়ার্ক সংযোগে সমস্যা হয়েছে: ${error.message}</div>`;
+                resultsContainer.innerHTML = `<div class="error-msg">Network shomoshsha: ${error.message}</div>`;
             }
         }
     </script>
