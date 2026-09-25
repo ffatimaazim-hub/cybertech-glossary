@@ -170,7 +170,7 @@
             resultsContainer.innerHTML = `<div class="result-card">Onushondhan kora hocche... Onugroho kore opekkha korun.</div>`;
 
             const promptText = `Provide a comprehensive cybersecurity explanation, usage, and details for the following term or tool: ${query}.`;
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
             try {
                 let response = await fetch(apiUrl, {
@@ -182,7 +182,7 @@
                 let data = await response.json();
 
                 if (!response.ok) {
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-flash:generateContent?key=${apiKey}`;
+                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
                     response = await fetch(fallbackUrl, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
