@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberTech Glossary</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --accent: #58a6ff;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --border: #30363d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--accent);
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent);
+        }
+
+        .dictionary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .term-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        .category-badge {
+            font-size: 0.75rem;
+            background-color: rgba(88, 166, 255, 0.15);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+        }
+
+        .term-desc {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            line-height: 1.5;
+            margin: 0 0 10px 0;
+        }
+
+        .command-box {
+            background-color: #090d11;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #79c0ff;
+            border-left: 3px solid var(--accent);
+            overflow-x: auto;
+        }
+
+        .no-result {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 30px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🛡️ CyberTech Glossary</h1>
+        <p class="subtitle">সাইবার সিকিউরিটি ও টেকনিক্যাল টার্মের সহজ ডিকশনারি</p>
+    </header>
+
+    <input type="text" id="searchInput" class="search-box" placeholder="টার্ম বা কমান্ড সার্চ করুন (যেমন: Phishing, Nmap, Firewall)...">
+
+    <div id="dictionary" class="dictionary-list"></div>
+    <div id="noResult" class="no-result">কোনো ফলাফল পাওয়া যায়নি!</div>
+</div>
+
+<script>
+    const terms = [
+        {
+            term: "Phishing (ফিশিং)",
+            category: "Social Engineering",
+            desc: "প্রতারণামূলক ইমেইল বা ওয়েবসাইটের মাধ্যমে ব্যবহারকারীর পাসওয়ার্ড বা স্পর্শকাতর তথ্য চুরি করার পদ্ধতি।",
+            cmd: "টিপ: কোনো সন্দেহজনক লিঙ্কে ক্লিক করার আগে URL ভালোভাবে যাচাই করুন।"
+        },
+        {
+            term: "Firewall (ফায়ারওয়াল)",
+            category: "Network Security",
+            desc: "নেটওয়ার্কের একটি নিরাপত্তা ব্যবস্থা যা ইনকামিং ও আউটগোয়িং ট্রাফিক মনিটর ও ফিল্টার করে।",
+            cmd: "Linux UFW: sudo ufw enable"
+        },
+        {
+            term: "Nmap",
+            category: "Reconnaissance",
+            desc: "নেটওয়ার্ক স্ক্যানিং এবং ওপেন পোর্ট খুঁজে বের করার জনপ্রিয় ওপেন সোর্স টুল।",
+            cmd: "nmap -sV target_ip"
+        },
+        {
+            term: "SQL Injection (SQLi)",
+            category: "Web Security",
+            desc: "ওয়েব অ্যাপ্লিকেশনের ইনপুট ফিল্ডে ক্ষতিকারক SQL কোড দিয়ে ডাটাবেজ এক্সেস করার আক্রমণ।",
+            cmd: "প্রতিরোধ: Prepared Statements ও Parameterized Queries ব্যবহার করুন।"
+        },
+        {
+            term: "VPN (Virtual Private Network)",
+            category: "Privacy",
+            desc: "ব্যবহারকারীর ইন্টারনেট ট্রাফিককে এনক্রিপ্ট করে এবং IP ঠিকানা লুকিয়ে অনলাইন প্রাইভেসী নিশ্চিত করে।",
+            cmd: "কাজ: পাবলিক ওয়াইফাই ব্যবহারে এনক্রিপ্টেড টানেল তৈরি করা।"
+        },
+        {
+            term: "Brute Force Attack",
+            category: "Authentication",
+            desc: "সম্ভাব্য সব ধরনের পাসওয়ার্ড কম্বিনেশন পরপর ট্রাই করে এক্সেস নেওয়ার চেষ্টা করা।",
+            cmd: "প্রতিরোধ: Rate Limiting এবং Multi-Factor Authentication (MFA) চালু করা।"
+        }
+    ];
+
+    const dictionaryContainer = document.getElementById('dictionary');
+    const searchInput = document.getElementById('searchInput');
+    const noResult = document.getElementById('noResult');
+
+    function renderTerms(data) {
+        dictionaryContainer.innerHTML = '';
+        if (data.length === 0) {
+            noResult.style.display = 'block';
+            return;
+        }
+        noResult.style.display = 'none';
+
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="term-title">${item.term}</span>
+                    <span class="category-badge">${item.category}</span>
+                </div>
+                <p class="term-desc">${item.desc}</p>
+                <div class="command-box">${item.cmd}</div>
+            `;
+            dictionaryContainer.appendChild(card);
+        });
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        const filtered = terms.filter(item => 
+            item.term.toLowerCase().includes(query) ||
+            item.category.toLowerCase().includes(query) ||
+            item.desc.toLowerCase().includes(query)
+        );
+        renderTerms(filtered);
+    });
+
+    renderTerms(terms);
+</script>
+
+</body>
+</html>
