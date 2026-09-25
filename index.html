@@ -87,6 +87,10 @@
         button.search-btn:hover {
             opacity: 0.9;
         }
+        button.search-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         #results-container {
             width: 100%;
             max-width: 700px;
@@ -99,6 +103,7 @@
             padding: 20px;
             margin-bottom: 20px;
             line-height: 1.6;
+            word-wrap: break-word;
         }
         .error-msg {
             color: #f85149;
@@ -128,7 +133,7 @@
 
         <div class="search-box-container">
             <input type="text" id="query-input" placeholder="Jekono tool ba security term likhun...">
-            <button class="search-btn" onclick="performSearch()">Search</button>
+            <button class="search-btn" id="search-btn" onclick="performSearch()">Search</button>
         </div>
 
         <div id="results-container"></div>
@@ -139,23 +144,72 @@
     </footer>
 
     <script>
+        // Cache the working model name per API key so we don't call ListModels every single search
+        let cachedModelName = null;
+        let cachedForKey = null;
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
         function setApiKey() {
             let currentKey = localStorage.getItem("gemini_api_key") || "";
             let userKey = prompt("Apnar Google Gemini API Key ti pest korun:", currentKey);
-            
+
             if (userKey !== null) {
                 userKey = userKey.trim();
                 if (userKey.length > 0) {
                     localStorage.setItem("gemini_api_key", userKey);
+                    cachedModelName = null;
+                    cachedForKey = null;
                     alert("API Key shofolbhabe save hoyeche!");
                 }
             }
         }
 
+        async function detectWorkingModel(apiKey) {
+            if (cachedModelName && cachedForKey === apiKey) {
+                return cachedModelName;
+            }
+
+            const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+            const res = await fetch(listUrl);
+            const data = await res.json();
+
+            if (!res.ok) {
+                const msg = (data.error && data.error.message) || "API key diye model list ana jayni.";
+                throw new Error(msg);
+            }
+
+            const models = (data.models || []).filter(m =>
+                Array.isArray(m.supportedGenerationMethods) &&
+                m.supportedGenerationMethods.includes("generateContent")
+            );
+
+            if (models.length === 0) {
+                throw new Error("Ei API key diye generateContent support kore emon kono model paoa jayni.");
+            }
+
+            const preferredOrder = ["flash-latest", "flash", "pro-latest", "pro"];
+            let chosen = null;
+            for (const keyword of preferredOrder) {
+                chosen = models.find(m => m.name.toLowerCase().includes(keyword));
+                if (chosen) break;
+            }
+            if (!chosen) chosen = models[0];
+
+            cachedModelName = chosen.name;
+            cachedForKey = apiKey;
+            return cachedModelName;
+        }
+
         async function performSearch() {
             const query = document.getElementById("query-input").value.trim();
             const resultsContainer = document.getElementById("results-container");
-            
+            const searchBtn = document.getElementById("search-btn");
+
             if (!query) {
                 alert("Doya kore search box-e kichu likhun.");
                 return;
@@ -167,46 +221,49 @@
                 return;
             }
 
+            searchBtn.disabled = true;
             resultsContainer.innerHTML = `<div class="result-card">Onushondhan kora hocche... Onugroho kore opekkha korun.</div>`;
 
-            const promptText = `Provide a comprehensive cybersecurity explanation, usage, and details for the following term or tool: ${query}.`;
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-
             try {
-                let response = await fetch(apiUrl, {
+                const modelName = await detectWorkingModel(apiKey);
+
+                const promptText = `Provide a comprehensive cybersecurity explanation, usage, and details for the following term or tool: ${query}.`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+                const response = await fetch(apiUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
                 });
 
-                let data = await response.json();
+                const data = await response.json();
 
-                if (!response.ok) {
-                    const fallbackUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-                    response = await fetch(fallbackUrl, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-                    });
-                    data = await response.json();
-                }
-
-                if (response.ok && data.candidates && data.candidates[0].content) {
-                    const aiResponse = data.candidates[0].content.parts[0].text;
+                if (response.ok && data.candidates && data.candidates[0] && data.candidates[0].content) {
+                    const aiResponse = data.candidates[0].content.parts.map(p => p.text || "").join("");
+                    const safeQuery = escapeHtml(query);
+                    const safeResponse = escapeHtml(aiResponse).replace(/\n/g, '<br>');
                     resultsContainer.innerHTML = `
                         <div class="result-card">
-                            <h3>Folafol: ${query}</h3>
-                            <p>${aiResponse.replace(/\n/g, '<br>')}</p>
+                            <h3>Folafol: ${safeQuery}</h3>
+                            <p>${safeResponse}</p>
                         </div>
                     `;
                 } else {
-                    const errorMsg = data.error ? data.error.message : "Ojana shomoshsha hoyeche.";
-                    resultsContainer.innerHTML = `<div class="error-msg">Error: ${errorMsg}</div>`;
+                    cachedModelName = null;
+                    cachedForKey = null;
+                    const errorMsg = (data.error && data.error.message) || "Ojana shomoshsha hoyeche.";
+                    resultsContainer.innerHTML = `<div class="error-msg">Error: ${escapeHtml(errorMsg)}</div>`;
                 }
             } catch (error) {
-                resultsContainer.innerHTML = `<div class="error-msg">Network shomoshsha: ${error.message}</div>`;
+                resultsContainer.innerHTML = `<div class="error-msg">Shomoshsha hoyeche: ${escapeHtml(error.message)}</div>`;
+            } finally {
+                searchBtn.disabled = false;
             }
         }
+
+        document.getElementById("query-input").addEventListener("keydown", function (e) {
+            if (e.key === "Enter") performSearch();
+        });
     </script>
 </body>
 </html>
