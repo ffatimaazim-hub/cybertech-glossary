@@ -6,224 +6,287 @@
     <title>CyberTech Glossary</title>
     <style>
         :root {
-            --bg-color: #0d1117;
-            --card-bg: #161b22;
-            --accent: #58a6ff;
-            --text-main: #c9d1d9;
-            --text-muted: #8b949e;
-            --border: #30363d;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #06b6d4;
+            --accent-hover: #0891b2;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --code-bg: #020617;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            color: var(--text-primary);
+            padding: 2rem 1rem;
+            min-height: 100vh;
         }
 
         .container {
-            width: 100%;
-            max-width: 650px;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 2.5rem;
         }
 
-        h1 {
-            color: var(--accent);
-            font-size: 1.8rem;
-            margin-bottom: 8px;
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin: 0;
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
         }
 
         .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
             width: 100%;
-            padding: 14px 18px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
+            padding: 1rem 1.25rem;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
             background-color: var(--card-bg);
-            color: var(--text-main);
-            font-size: 1rem;
-            box-sizing: border-box;
+            color: var(--text-primary);
             outline: none;
-            margin-bottom: 20px;
-            transition: border-color 0.2s;
+            transition: all 0.3s ease;
         }
 
-        .search-box:focus {
-            border-color: var(--accent);
+        .search-box input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25);
         }
 
-        .dictionary-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .dictionary-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
         }
 
         .card {
             background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
             transition: transform 0.2s ease, border-color 0.2s ease;
         }
 
         .card:hover {
-            border-color: var(--accent);
             transform: translateY(-2px);
+            border-color: var(--accent-color);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .term-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         .category-badge {
-            font-size: 0.75rem;
-            background-color: rgba(88, 166, 255, 0.15);
-            color: var(--accent);
-            padding: 4px 8px;
+            background-color: rgba(6, 182, 212, 0.15);
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            padding: 0.25rem 0.75rem;
             border-radius: 20px;
-            border: 1px solid rgba(88, 166, 255, 0.3);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            font-weight: 600;
         }
 
         .term-desc {
-            font-size: 0.9rem;
-            color: var(--text-main);
-            line-height: 1.5;
-            margin: 0 0 10px 0;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
         }
 
         .command-box {
-            background-color: #090d11;
-            padding: 8px 12px;
+            background-color: var(--code-bg);
+            border-left: 3px solid var(--accent-color);
+            padding: 0.75rem 1rem;
             border-radius: 6px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: #79c0ff;
-            border-left: 3px solid var(--accent);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            color: #38bdf8;
             overflow-x: auto;
+            word-break: break-all;
         }
 
         .no-result {
             text-align: center;
-            color: var(--text-muted);
-            margin-top: 30px;
+            padding: 3rem;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
             display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>🛡️ CyberTech Glossary</h1>
-        <p class="subtitle">সাইবার সিকিউরিটি ও টেকনিক্যাল টার্মের সহজ ডিকশনারি</p>
-    </header>
+    <div class="container">
+        <header>
+            <h1>🛡️ CyberTech Glossary</h1>
+            <p>সাইবার সিকিউরিটি ও টেকনিক্যাল টার্মের লাইভ সার্চ ডিকশনারি</p>
+        </header>
 
-    <input type="text" id="searchInput" class="search-box" placeholder="টার্ম বা কমান্ড সার্চ করুন (যেমন: Phishing, Nmap, Firewall)...">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="টার্ম বা কমান্ড সার্চ করুন (যেমন: Phishing, Nmap, Firewall, Kerberoasting)...">
+        </div>
 
-    <div id="dictionary" class="dictionary-list"></div>
-    <div id="noResult" class="no-result">কোনো ফলাফল পাওয়া যায়নি!</div>
-</div>
+        <div id="dictionaryContainer" class="dictionary-grid"></div>
+        <div id="noResult" class="no-result">কোনো টার্ম বা কমান্ড খুঁজে পাওয়া যায়নি।</div>
 
-<script>
-    const terms = [
-        {
-            term: "Phishing (ফিশিং)",
-            category: "Social Engineering",
-            desc: "প্রতারণামূলক ইমেইল বা ওয়েবসাইটের মাধ্যমে ব্যবহারকারীর পাসওয়ার্ড বা স্পর্শকাতর তথ্য চুরি করার পদ্ধতি।",
-            cmd: "টিপ: কোনো সন্দেহজনক লিঙ্কে ক্লিক করার আগে URL ভালোভাবে যাচাই করুন।"
-        },
-        {
-            term: "Firewall (ফায়ারওয়াল)",
-            category: "Network Security",
-            desc: "নেটওয়ার্কের একটি নিরাপত্তা ব্যবস্থা যা ইনকামিং ও আউটগোয়িং ট্রাফিক মনিটর ও ফিল্টার করে।",
-            cmd: "Linux UFW: sudo ufw enable"
-        },
-        {
-            term: "Nmap",
-            category: "Reconnaissance",
-            desc: "নেটওয়ার্ক স্ক্যানিং এবং ওপেন পোর্ট খুঁজে বের করার জনপ্রিয় ওপেন সোর্স টুল।",
-            cmd: "nmap -sV target_ip"
-        },
-        {
-            term: "SQL Injection (SQLi)",
-            category: "Web Security",
-            desc: "ওয়েব অ্যাপ্লিকেশনের ইনপুট ফিল্ডে ক্ষতিকারক SQL কোড দিয়ে ডাটাবেজ এক্সেস করার আক্রমণ।",
-            cmd: "প্রতিরোধ: Prepared Statements ও Parameterized Queries ব্যবহার করুন।"
-        },
-        {
-            term: "VPN (Virtual Private Network)",
-            category: "Privacy",
-            desc: "ব্যবহারকারীর ইন্টারনেট ট্রাফিককে এনক্রিপ্ট করে এবং IP ঠিকানা লুকিয়ে অনলাইন প্রাইভেসী নিশ্চিত করে।",
-            cmd: "কাজ: পাবলিক ওয়াইফাই ব্যবহারে এনক্রিপ্টেড টানেল তৈরি করা।"
-        },
-        {
-            term: "Brute Force Attack",
-            category: "Authentication",
-            desc: "সম্ভাব্য সব ধরনের পাসওয়ার্ড কম্বিনেশন পরপর ট্রাই করে এক্সেস নেওয়ার চেষ্টা করা।",
-            cmd: "প্রতিরোধ: Rate Limiting এবং Multi-Factor Authentication (MFA) চালু করা।"
+        <footer>
+            <p>© CyberTech Glossary - Security Research & Knowledge Base</p>
+        </footer>
+    </div>
+
+    <script>
+        const allTerms = [
+            {
+                term: "Kerberoasting",
+                category: "Active Directory Security",
+                desc: "Active Directory পরিবেশে সার্ভিস অ্যাকাউন্ট থেকে TGS (Ticket Granting Service) টিকিট সংগ্রহ করে অফলাইনে তার পাসওয়ার্ড হ্যাশ ক্র্যাক করার একটি পোস্ট-এক্সপ্লয়টেশন অ্যাটাক টেকনিক।",
+                cmd: "GetUserSPNs.py -request domain.local/user:password"
+            },
+            {
+                term: "Pass-the-Hash (PtH)",
+                category: "Network & Identity Security",
+                desc: "একটি এক্সপ্লয়টেশন টেকনিক যেখানে আক্রমণকারী আসল পাসওয়ার্ড ক্র্যাক না করেই NTLM বা LM পাসওয়ার্ড হ্যাশ ব্যবহার করে নেটওয়ার্কের অন্যান্য সিস্টেমে প্রমাণীকরণ (Authenticate) করে।",
+                cmd: "mimikatz # sekurlsa::pth /user:Administrator /domain:target /ntlm:<HASH>"
+            },
+            {
+                term: "DNS Tunneling",
+                category: "Network Defense & SOC",
+                desc: "DNS প্রোটোকলকে চ্যালেন হিসেবে ব্যবহার করে নেটওয়ার্কের ফায়ারওয়াল বা IDS/IPS বাইপাস করে ডেটা এক্সফিল্ট্রেশন (Exfiltration) বা Command & Control (C2) ট্রাফিক আদান-প্রদান করার মাধ্যম।",
+                cmd: "Detection Query: sum(dns_query_length) by src_ip > threshold"
+            },
+            {
+                term: "Buffer Overflow",
+                category: "Binary Exploitation",
+                desc: "একটি মেমোরি সফটওয়্যার ভ্যালনারেবিলিটি যেখানে কোনো প্রোগ্রামের নির্দিষ্ট মেমোরি বাফারের সীমার চেয়ে বেশি ডেটা রাইট করা হয়, যার ফলে প্রসেস মেমোরি ওভাররাইট করে ক্ষতিকারক শেলকোড এক্সিকিউট করা সম্ভব হয়।",
+                cmd: "GDB: run $(python3 -c 'print(\"A\"*100 + \"\\xef\\xbe\\xad\\xde\")')"
+            },
+            {
+                term: "Process Hollowing",
+                category: "Malware Analysis & EDR",
+                desc: "অ্যাডভান্সড ম্যালওয়্যার টেকনিক যেখানে একটি বৈধ প্রসেস (যেমন: svchost.exe) সাসপেন্ডেড স্টেটে তৈরি করে তার অরিজিনাল মেমোরি আনম্যাপ করে ক্ষতিকারক ইভিল কোড ইনজেক্ট করে রান করানো হয়।",
+                cmd: "Win32 API: CreateProcess(CREATE_SUSPENDED) -> NtUnmapViewOfSection"
+            },
+            {
+                term: "Golden Ticket Attack",
+                category: "Active Directory Security",
+                desc: "Active Directory-র Kerberos Krbtgt অ্যাকাউন্টের হ্যাশ চুরি করে একটি ভুয়া Ticket Granting Ticket (TGT) তৈরি করা, যার মাধ্যমে ডোকেইন কন্ট্রোলারের যেকোনো সার্ভিসে আনলিমিটেড এক্সেস নেওয়া যায়।",
+                cmd: "mimikatz # kerberos::golden /user:Admin /domain:corp.local /sid:S-1-5-... /krbtgt:<HASH>"
+            },
+            {
+                term: "Phishing (ফিশিং)",
+                category: "Social Engineering",
+                desc: "প্রতারণামূলক ইমেইল বা ওয়েবসাইটের মাধ্যমে ব্যবহারকারীর পাসওয়ার্ড বা সংবেদনশীল তথ্য চুরি করার পদ্ধতি।",
+                cmd: "Tip: কোনো সন্দেহজনক লিংকে ক্লিক করার আগে URL ভালোভাব যাচাই করুন।"
+            },
+            {
+                term: "Firewall (ফায়ারওয়াল)",
+                category: "Network Security",
+                desc: "নেটওয়ার্কের একটি নিরাপত্তা ব্যবস্থা যা ইনকামিং ও আউটগোয়িং ট্রাফিক মনিটর ও ফিল্টার করে।",
+                cmd: "Linux UFW: sudo ufw enable"
+            },
+            {
+                term: "Nmap",
+                category: "Reconnaissance",
+                desc: "নেটওয়ার্ক স্ক্যানিং এবং ওপেন পোর্ট খুঁজে বের করার জনপ্রিয় ওপেন সোর্স টুল।",
+                cmd: "nmap -sV target_ip"
+            },
+            {
+                term: "SQL Injection (SQLi)",
+                category: "Web Security",
+                desc: "ওয়েব অ্যাপ্লিকেশনের ইনপুট ফিল্ডে ক্ষতিকারক SQL কোড ইনজেক্ট করে ডাটাবেস এক্সেস করার আক্রমণ পদ্ধতি।",
+                cmd: "sqlmap -u \"http://target.com/page.php?id=1\" --dbs"
+            }
+        ];
+
+        function renderTerms(items) {
+            const container = document.getElementById('dictionaryContainer');
+            const noResult = document.getElementById('noResult');
+            container.innerHTML = '';
+
+            if (!items || items.length === 0) {
+                if (noResult) noResult.style.display = 'block';
+                return;
+            }
+            if (noResult) noResult.style.display = 'none';
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="term-title">${item.term}</span>
+                        <span class="category-badge">${item.category || 'General'}</span>
+                    </div>
+                    <p class="term-desc">${item.desc}</p>
+                    <div class="command-box">${item.cmd || 'N/A'}</div>
+                `;
+                container.appendChild(card);
+            });
         }
-    ];
 
-    const dictionaryContainer = document.getElementById('dictionary');
-    const searchInput = document.getElementById('searchInput');
-    const noResult = document.getElementById('noResult');
+        renderTerms(allTerms.slice(0, 20));
 
-    function renderTerms(data) {
-        dictionaryContainer.innerHTML = '';
-        if (data.length === 0) {
-            noResult.style.display = 'block';
-            return;
-        }
-        noResult.style.display = 'none';
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
 
-        data.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-header">
-                    <span class="term-title">${item.term}</span>
-                    <span class="category-badge">${item.category}</span>
-                </div>
-                <p class="term-desc">${item.desc}</p>
-                <div class="command-box">${item.cmd}</div>
-            `;
-            dictionaryContainer.appendChild(card);
+            if (!query) {
+                renderTerms(allTerms.slice(0, 20));
+                return;
+            }
+
+            const filtered = allTerms.filter(item =>
+                item.term.toLowerCase().includes(query) ||
+                (item.category && item.category.toLowerCase().includes(query)) ||
+                item.desc.toLowerCase().includes(query) ||
+                (item.cmd && item.cmd.toLowerCase().includes(query))
+            ).slice(0, 30);
+
+            renderTerms(filtered);
         });
-    }
-
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-        const filtered = terms.filter(item => 
-            item.term.toLowerCase().includes(query) ||
-            item.category.toLowerCase().includes(query) ||
-            item.desc.toLowerCase().includes(query)
-        );
-        renderTerms(filtered);
-    });
-
-    renderTerms(terms);
-</script>
-
+    </script>
 </body>
 </html>
